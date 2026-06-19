@@ -39,7 +39,7 @@ class GeminiLLM(LLM_Provider):
         )
         return response.text
 
-class RAGBase:
+class RAGMinSearch:
     def __init__(
         self,
         index,
@@ -60,15 +60,7 @@ class RAGBase:
         self.model = model
 
     def search(self,question):
-        boost_dict = {'question' : 3.0 , 'section' : 0.75}
-        filter_dict = {'course' : self.course}
-        res = self.index.search(
-            question,
-            boost_dict=boost_dict,
-            filter_dict=filter_dict,
-            num_results=5,
-        )
-        return res
+        return self.index.search_index(question,self.course)
 
     def build_context(self,search_result):
         lines = []
@@ -92,6 +84,10 @@ class RAGBase:
         return self.llm_provider.generate_response(self.model,self.system_prompt,final_prompt)
 
         
+class RAGSQLiteSearch(RAGMinSearch):
+    def search(self,question):
+        return self.index.search_index(question)
+
 
 
 
